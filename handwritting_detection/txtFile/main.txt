@@ -1,0 +1,33 @@
+from mlxtend.data import loadlocal_mnist
+import cv2 as cv
+import numpy as np
+
+data = np.load('data.npy')
+labels = np.load('labels.npy')
+t_data = np.load('t-data.npy')
+t_labels = np.load('t-labels.npy')
+
+def display(num):
+	tmp = np.reshape(num,(8,8))
+	tmp = cv.resize(tmp,(100,100),interpolation = cv.INTER_CUBIC)
+	cv.imshow("Number",tmp)
+
+def showDataAndLabels(dat,lab):
+	for index in range(0,dat.shape[0]):
+		display(dat[index])
+		print('number: ' + str(lab[index]),end='\r')
+		k = cv.waitKey(0) & 0xFF
+		if k == 27:
+			break
+
+def dataTraining():
+	from sklearn import svm
+	clf = svm.SVC(gamma = 0.001, C = 100.)
+	clf.fit(data,labels)
+	print('Training process is complete!')
+
+
+showDataAndLabels(data,labels)
+print('predict number\t\tground truth')
+for index in range(0,10):
+	print(str(clf.predict(t_data[index])+'\t\t'+str(t_labels[index])))
